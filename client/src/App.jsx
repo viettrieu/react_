@@ -27,13 +27,13 @@ const App = () => {
         <Route path="/product/:id">
           <Product />
         </Route>
-        <Route path="/cart">
-          <Cart />
-        </Route>
+        <Route path="/cart">{user ? <Cart /> : <Redirect to="/login" />}</Route>
         <Route path="/success">
           <Success />
         </Route>
-        <Route path="/login">{user ? <Redirect to="/" /> : <Login />}</Route>
+        <Route path="/login">
+          <Login />
+        </Route>
         <Route path="/register">
           {user ? <Redirect to="/" /> : <Register />}
         </Route>

@@ -1,5 +1,5 @@
 import { Add, Remove } from "@material-ui/icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
@@ -9,6 +9,7 @@ import StripeCheckout from "react-stripe-checkout";
 import { useEffect, useState } from "react";
 import { userRequest } from "../requestMethods";
 import { useHistory } from "react-router";
+import { deleteProduct } from "../redux/cartRedux";
 
 const KEY = process.env.REACT_APP_STRIPE;
 
@@ -64,6 +65,7 @@ const Product = styled.div`
   display: flex;
   justify-content: space-between;
   ${mobile({ flexDirection: "column" })}
+  position:relative;
 `;
 
 const ProductDetail = styled.div`
@@ -100,7 +102,7 @@ const PriceDetail = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
 `;
 
 const ProductAmountContainer = styled.div`
@@ -159,14 +161,24 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
+const Icon = styled.div`
+    cursor:pointer;
+`;
+
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch()
   const [stripeToken, setStripeToken] = useState(null);
   const history = useHistory();
+  const quantity = useSelector((state) => state.cart.quantity);
 
   const onToken = (token) => {
     setStripeToken(token);
   };
+
+  const handleDelete = (product,index)=>{
+    dispatch(deleteProduct({...product,index}))
+  }
 
   useEffect(() => {
     const makeRequest = async () => {
@@ -177,7 +189,8 @@ const Cart = () => {
         });
         history.push("/success", {
           stripeData: res.data,
-          products: cart, });
+          products: cart,
+        });
       } catch {}
     };
     stripeToken && makeRequest();
@@ -191,14 +204,13 @@ const Cart = () => {
         <Top>
           <TopButton>CONTINUE SHOPPING</TopButton>
           <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
+            <TopText>Shopping Bag({quantity})</TopText>
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
-            {cart.products.map((product) => (
+            {cart.products.map((product,index) => (
               <Product>
                 <ProductDetail>
                   <Image src={product.img} />
@@ -224,6 +236,9 @@ const Cart = () => {
                   <ProductPrice>
                     $ {product.price * product.quantity}
                   </ProductPrice>
+                  <Icon onClick={()=>handleDelete(product,index)}>
+                    <i class="fa-solid fa-trash"></i>
+                  </Icon>
                 </PriceDetail>
               </Product>
             ))}

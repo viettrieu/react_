@@ -1,17 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import "./product.css";
 import Chart from "../../components/chart/Chart";
 import { productData } from "../../dummyData";
 import { Publish } from "@material-ui/icons";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
 import { userRequest } from "../../requestMethods";
+import { useRef } from "react";
+import { updateProduct } from "../../redux/apiCalls";
 
 export default function Product() {
   const location = useLocation();
   const productId = location.pathname.split("/")[2];
   const [pStats, setPStats] = useState([]);
-
+  const nameRef = useRef();
+  const priceRef = useRef();
+  const categoriesRef = useRef();
+  const colorRef = useRef();
+  const sizeRef = useRef();
+  const descRef = useRef();
+  const inStockRef = useRef();
+  const imgRef = useRef();
+  const dispatch = useDispatch();
+  const history = useHistory()
   const product = useSelector((state) =>
     state.product.products.find((product) => product._id === productId)
   );
@@ -54,6 +65,24 @@ export default function Product() {
     getStats();
   }, [productId, MONTHS]);
 
+  const handleUpdate = (e)=>{
+    e.preventDefault();
+    const newProduct = {
+      title : nameRef.current.value,
+      desc : descRef.current.value,
+      price : priceRef.current.value,
+      categories : categoriesRef.current.value.split(","),
+      size : sizeRef.current.value.split(","),
+      color : colorRef.current.value.split(","),
+      inStock : inStockRef.current.value,
+      img : product.img
+    }
+    console.log(productId);
+    updateProduct(productId,newProduct,dispatch);
+    window.alert("sua thanh cong!")
+    history.goBack();
+  }
+
   return (
     <div className="product">
       <div className="productTitleContainer">
@@ -68,8 +97,8 @@ export default function Product() {
         </div>
         <div className="productTopRight">
           <div className="productInfoTop">
-            <img src={product.img} alt="" className="productInfoImg" />
-            <span className="productName">{product.title}</span>
+            <img src={product?.img} alt="" className="productInfoImg" />
+            <span className="productName">{product?.title}</span>
           </div>
           <div className="productInfoBottom">
             <div className="productInfoItem">
@@ -88,16 +117,22 @@ export default function Product() {
         </div>
       </div>
       <div className="productBottom">
-        <form className="productForm">
+        <form  className="productForm">
           <div className="productFormLeft">
             <label>Product Name</label>
-            <input type="text" placeholder={product?.title} />
+            <input ref={nameRef} name="name" type="text" placeholder={product?.title} />
             <label>Product Description</label>
-            <input type="text" placeholder={product?.desc} />
+            <input ref={descRef} name="desc" type="text" placeholder={product?.desc} />
             <label>Price</label>
-            <input type="text" placeholder={product?.price} />
+            <input ref={priceRef}  name="price" type="text" placeholder={product?.price} />
+            <label>Categories</label>
+            <input ref={categoriesRef} type="text" placeholder={product?.categories.toString()} />
+            <label>Size</label>
+            <input ref={sizeRef} name="size" type="text" placeholder={product?.size.toString()} />
+            <label>Color</label>
+            <input ref={colorRef} name="color" type="text" placeholder={product?.color.toString()} />
             <label>In Stock</label>
-            <select name="inStock" id="idStock">
+            <select ref={inStockRef}  name="inStock" id="idStock">
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
@@ -108,9 +143,9 @@ export default function Product() {
               <label for="file">
                 <Publish />
               </label>
-              <input type="file" id="file" style={{ display: "none" }} />
+              <input ref={imgRef} type="file" id="file" style={{ display: "none" }} />
             </div>
-            <button className="productButton">Update</button>
+            <button onClick={handleUpdate} type="button" className="productButton">Update</button>
           </div>
         </form>
       </div>
