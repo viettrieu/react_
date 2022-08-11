@@ -73,9 +73,9 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const quantity = useSelector((state) => state.cart.quantity);
   const user = useSelector((state) => state.user.currentUser);
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     dispatch(logOut());
-  }
+  };
   return (
     <Container>
       <Wrapper>
@@ -91,9 +91,14 @@ const Navbar = () => {
         </Center>
         <Right>
           {user ? (
-            <span onClick={handleLogout}>
-              <MenuItem>LOGOUT</MenuItem>
-            </span>
+            <>
+              <span onClick={handleLogout}>
+                <MenuItem>LOGOUT</MenuItem>
+              </span>
+              <Link to={"/orders"}>
+                <MenuItem>Your order</MenuItem>
+              </Link>
+            </>
           ) : (
             <>
               <Link to={"/register"}>

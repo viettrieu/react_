@@ -11,7 +11,8 @@ import { userRequest } from "../requestMethods";
 import { useHistory } from "react-router";
 import { deleteProduct } from "../redux/cartRedux";
 
-const KEY = process.env.REACT_APP_STRIPE;
+const KEY =
+  "pk_test_51LVVTxHaz5igCrdpHFddbkFGPnakDeem2AfPoXPeZHAd4A4Y0sGkLNKuwLhlwNw5hmOi64iVCLVhgMnJOUlluzPC00dzh9ikIX";
 
 const Container = styled.div``;
 
@@ -162,12 +163,12 @@ const Button = styled.button`
 `;
 
 const Icon = styled.div`
-    cursor:pointer;
+  cursor: pointer;
 `;
 
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [stripeToken, setStripeToken] = useState(null);
   const history = useHistory();
   const quantity = useSelector((state) => state.cart.quantity);
@@ -176,9 +177,9 @@ const Cart = () => {
     setStripeToken(token);
   };
 
-  const handleDelete = (product,index)=>{
-    dispatch(deleteProduct({...product,index}))
-  }
+  const handleDelete = (product, index) => {
+    dispatch(deleteProduct({ ...product, index }));
+  };
 
   useEffect(() => {
     const makeRequest = async () => {
@@ -210,7 +211,7 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            {cart.products.map((product,index) => (
+            {cart.products.map((product, index) => (
               <Product>
                 <ProductDetail>
                   <Image src={product.img} />
@@ -236,7 +237,7 @@ const Cart = () => {
                   <ProductPrice>
                     $ {product.price * product.quantity}
                   </ProductPrice>
-                  <Icon onClick={()=>handleDelete(product,index)}>
+                  <Icon onClick={() => handleDelete(product, index)}>
                     <i class="fa-solid fa-trash"></i>
                   </Icon>
                 </PriceDetail>
